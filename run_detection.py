@@ -53,7 +53,7 @@ def resize_label_image(image, gt_image, image_height, image_width):
 
 
 # runs_dir = 'RUNS'
-runs_dir = '/home/zacefron/Desktop/golfcart-workspace/catkin_ws/src/visualization/include/KittiSeg/RUNS'
+runs_dir = '/home/zacefron/Desktop/golfcart-workspace/catkin_ws/src/lanedetection/include/KittiSeg/RUNS'
 default_run = 'KittiSeg_2019_11_15_16.15'
 logdir = os.path.join(runs_dir, default_run)
 tv_utils.set_gpus_to_use()
@@ -119,9 +119,11 @@ def run_detection(img):
         # Plot the hard prediction as green overlay
         green_image = tv_utils.fast_overlay(image, street_prediction)
 
+        logging.info("--> Done with detection")
+
         return green_image
 
-os.chdir('src/visualization/include/KittiSeg')
+os.chdir('src/lanedetection/include/KittiSeg')
 print(os.getcwd())
 
 
