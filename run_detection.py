@@ -1,3 +1,19 @@
+#!/usr/bin/env python2
+
+"""
+Detects Cars in an image using KittiSeg.
+Input: Image
+Output: Image (with Cars plotted in Green)
+Utilizes: Trained KittiSeg weights. If no logdir is given,
+pretrained weights will be downloaded and used.
+Usage:
+python demo.py --input_image data/demo.png [--output_image output_image]
+                [--logdir /path/to/weights] [--gpus 0]
+--------------------------------------------------------------------------------
+The MIT License (MIT)
+Copyright (c) 2017 Marvin Teichmann
+Details: https://github.com/MarvinTeichmann/KittiSeg/blob/master/LICENSE
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -6,7 +22,7 @@ import json
 import logging
 import os
 import sys
-import glob
+
 import collections
 
 # configure logging
@@ -67,18 +83,26 @@ modules = tv_utils.load_modules_from_logdir(logdir)
 logging.info("Modules loaded successfully. Starting to build tf graph.")
 
 
+os.chdir('src/lanedetection/include/KittiSeg')
+print(os.getcwd())
+
+
+
 def run_detection(img):
     # Create tf graph and build module.
     with tf.Graph().as_default():
         # Create placeholder for input
+        print("starting KittiSeg inference")
+        print("la1")
         image_pl = tf.placeholder(tf.float32)
+        print("la21")
         image = tf.expand_dims(image_pl, 0)
+        print("la")
 
         # build Tensorflow graph using the model from logdir
-        prediction = core.build_inference_graph(hypes, modules,
-                                                image=image)
+        prediction = core.build_inference_graph(hypes, modules, image=image)
 
-        logging.info("Graph build successfully.")
+        print("Graph build successfully.")
 
         # Create a session for running Ops on the Graph.
         sess = tf.Session()
@@ -87,8 +111,9 @@ def run_detection(img):
         # Load weights from logdir
         core.load_weights(logdir, sess, saver)
 
-        logging.info("Weights loaded successfully.")
-        logging.info("Starting inference")
+        print("Weights loaded successfully.")
+
+        print("Starting inference")
 
         # Load and resize input image
         image = img
@@ -97,7 +122,7 @@ def run_detection(img):
             image_height = hypes['jitter']['image_height']
             image_width = hypes['jitter']['image_width']
             image = scp.misc.imresize(image, size=(image_height, image_width),
-            		          interp='cubic')
+                              interp='cubic')
 
         # Run KittiSeg model on image
         feed = {image_pl: image}
@@ -123,7 +148,5 @@ def run_detection(img):
 
         return green_image
 
-os.chdir('src/lanedetection/include/KittiSeg')
-print(os.getcwd())
 
 
